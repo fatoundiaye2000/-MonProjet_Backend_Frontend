@@ -1,7 +1,7 @@
 // src/services/auth.service.ts
 import httpClient from '../utils/httpClient';
 import { API_ENDPOINTS, STORAGE_KEYS } from '../config/constants';
-import { LoginRequest, LoginResponse, RegisterRequest, DecodedToken } from '../types/auth.types';
+import { LoginRequest, LoginResponse, RegisterRequest, DecodedToken, AuthUser } from '../types/auth.types';
 import { Utilisateur } from '../types/user.types';
 
 class AuthService {
@@ -9,67 +9,36 @@ class AuthService {
    * MÉTHODE 1 : LOGIN
    * Envoie les credentials au backend et stocke le token
    */
-  async login(username: string, password: string): Promise<DecodedToken> {
+  async login(email: string, password: string): Promise<AuthUser> {
     try {
-      console.log('📡 [AUTH SERVICE] Début login pour:', username);
+      console.log('🔐 [AUTH] Tentative de connexion');
       
-      // Le backend Spring attend "email", pas "username"
       const loginData: LoginRequest = {
-        email: username,
+        email,
         password: password
       };
 
-      console.log('📤 [AUTH SERVICE] Données envoyées:', { email: username, password: '***' });
-
-      // Appel API
       const response = await httpClient.post<LoginResponse>(
         API_ENDPOINTS.LOGIN,
         loginData
       );
-
-      console.log('📥 [AUTH SERVICE] Réponse reçue:', { 
-        token: response.data.token ? '✓ Présent' : '✗ Absent',
-        roles: response.data.roles 
-      });
-
-      const { token } = response.data;
+      const { token, email: userEmail, nom, prenom, roles } = response.data;
 
       if (!token) {
-        console.error('❌ [AUTH SERVICE] Token manquant dans la réponse!');
+        console.error('❌ [AUTH] Token manquant dans la réponse backend');
         throw new Error('Token manquant dans la réponse du serveur');
       }
 
-      // Stocker le token dans localStorage
-      console.log('💾 [AUTH SERVICE] Stockage du token...');
       this.setToken(token);
-      
-      // Vérifier immédiatement
-      const storedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
-      console.log('🔍 [AUTH SERVICE] Vérification stockage:', storedToken ? 'OK' : 'ÉCHEC');
-      
-      if (!storedToken) {
-        console.error('❌ [AUTH SERVICE] CRITIQUE: Token non stocké!');
-        throw new Error('Impossible de stocker le token');
-      }
-      
-      // Décoder le token pour extraire les infos utilisateur
-      console.log('🔓 [AUTH SERVICE] Décodage du token...');
-      const decoded = this.decodeToken(token);
-      
-      // Stocker les infos utilisateur
-      console.log('💾 [AUTH SERVICE] Stockage des infos user...');
-      this.setUser(decoded);
-      
-      // Vérifier
-      const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
-      console.log('🔍 [AUTH SERVICE] User stocké:', storedUser ? 'OK' : 'ÉCHEC');
-
-      console.log('✅ [AUTH SERVICE] Login terminé avec succès:', {
-        username: decoded.sub,
-        roles: decoded.roles
-      });
-
-      return decoded;
+      const user: AuthUser = {
+        email: userEmail || email,
+        nom: nom || '',
+        prenom: prenom || '',
+        roles: roles || []
+      };
+      this.setUser(user);
+      console.log('✅ [AUTH] Connexion réussie');
+      return user;
 
     } catch (error) {
       console.error('❌ [AUTH SERVICE] Erreur login:', error);
@@ -180,21 +149,15 @@ class AuthService {
   /**
    * MÉTHODE 8 : STOCKER LES INFOS UTILISATEUR (privée)
    */
-  private setUser(decoded: DecodedToken): void {
-    const user = {
-      username: decoded.sub,
-      roles: decoded.roles,
-    };
-    console.log('💾 [AUTH SERVICE] setUser:', user);
+  private setUser(user: AuthUser): void {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
   }
 
   /**
    * MÉTHODE 9 : OBTENIR LES INFOS UTILISATEUR
    */
-  getUser(): { username: string; roles: string[] } | null {
+  getUser(): AuthUser | null {
     const userStr = localStorage.getItem(STORAGE_KEYS.USER);
-    console.log('👤 [AUTH SERVICE] getUser:', userStr ? 'Présent' : 'Absent');
     if (!userStr) return null;
     try {
       return JSON.parse(userStr);
@@ -236,4 +199,4 @@ class AuthService {
 }
 
 // Exporter une instance unique (singleton)
-export default new AuthService();  
+export default new AuthService();

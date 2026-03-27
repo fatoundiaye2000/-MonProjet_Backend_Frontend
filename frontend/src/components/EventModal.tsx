@@ -12,16 +12,16 @@ interface EventModalProps {
 
 export default function EventModal({ isOpen, event, onClose, onSave, isLoading }: EventModalProps) {
   const [formData, setFormData] = useState<CreateEvenementDto>({
-    titre_event: '',
+    titreEvent: '',
     description: '',
-    date_debut: '',
-    date_fin: '',
+    dateDebut: '',
+    dateFin: '',
     image: '',
-    nb_place: 0,
-    adresse_id_adresse: undefined,
-    organisateur_id_user: undefined,
-    tarif_id_tarif: undefined,
-    type_event_id_type_event: undefined
+    nbPlace: 0,
+    typeEvent: undefined,
+    adresse: undefined,
+    tarif: undefined,
+    organisateur: undefined
   });
   const [error, setError] = useState('');
 
@@ -32,16 +32,16 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
     if (event) {
       // Mode édition : pré-remplir avec les données existantes
       const formattedData: CreateEvenementDto = {
-        titre_event: event.titre_event || '',
+        titreEvent: event.titreEvent || '',
         description: event.description || '',
-        date_debut: event.date_debut ? formatDateForInput(event.date_debut) : '',
-        date_fin: event.date_fin ? formatDateForInput(event.date_fin) : '',
+        dateDebut: event.dateDebut ? formatDateForInput(event.dateDebut) : '',
+        dateFin: event.dateFin ? formatDateForInput(event.dateFin) : '',
         image: event.image || '',
-        nb_place: event.nb_place || 0,
-        adresse_id_adresse: event.adresse_id_adresse,
-        organisateur_id_user: event.organisateur_id_user,
-        tarif_id_tarif: event.tarif_id_tarif,
-        type_event_id_type_event: event.type_event_id_type_event
+        nbPlace: event.nbPlace || 0,
+        typeEvent: event.typeEvent,
+        adresse: event.adresse,
+        tarif: event.tarif,
+        organisateur: event.organisateur
       };
       
       console.log('📝 Mode édition, données:', formattedData);
@@ -49,16 +49,16 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
     } else {
       // Mode création : formulaire vide
       const emptyData: CreateEvenementDto = {
-        titre_event: '',
+        titreEvent: '',
         description: '',
-        date_debut: '',
-        date_fin: '',
+        dateDebut: '',
+        dateFin: '',
         image: '',
-        nb_place: 0,
-        adresse_id_adresse: undefined,
-        organisateur_id_user: undefined,
-        tarif_id_tarif: undefined,
-        type_event_id_type_event: undefined
+        nbPlace: 0,
+        typeEvent: undefined,
+        adresse: undefined,
+        tarif: undefined,
+        organisateur: undefined
       };
       
       console.log('✨ Mode création, formulaire vide');
@@ -87,7 +87,7 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'nb_place') {
+    if (name === 'nbPlace') {
       setFormData((prev) => ({
         ...prev,
         [name]: parseInt(value) || 0,
@@ -124,12 +124,12 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
     setError('');
 
     // Validation minimale
-    if (!formData.titre_event.trim()) {
+    if (!formData.titreEvent.trim()) {
       setError('Le titre est obligatoire');
       return;
     }
 
-    if (!formData.date_debut) {
+    if (!formData.dateDebut) {
       setError('La date de début est obligatoire');
       return;
     }
@@ -201,8 +201,8 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
             </label>
             <input
               type="text"
-              name="titre_event"
-              value={formData.titre_event}
+              name="titreEvent"
+              value={formData.titreEvent}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Ex: Festival de Jazz International"
@@ -235,8 +235,8 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
               </label>
               <input
                 type="datetime-local"
-                name="date_debut"
-                value={formData.date_debut}
+                name="dateDebut"
+                value={formData.dateDebut}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 disabled={isLoading}
@@ -250,8 +250,8 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
               </label>
               <input
                 type="datetime-local"
-                name="date_fin"
-                value={formData.date_fin}
+                name="dateFin"
+                value={formData.dateFin}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 disabled={isLoading}
@@ -266,8 +266,8 @@ export default function EventModal({ isOpen, event, onClose, onSave, isLoading }
             </label>
             <input
               type="number"
-              name="nb_place"
-              value={formData.nb_place}
+              name="nbPlace"
+              value={formData.nbPlace}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="0"

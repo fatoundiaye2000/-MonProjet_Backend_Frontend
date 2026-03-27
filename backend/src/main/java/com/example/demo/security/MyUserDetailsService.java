@@ -2,6 +2,7 @@ package com.example.demo.security;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,11 +36,15 @@ public class MyUserDetailsService implements UserDetailsService {
         
         List<GrantedAuthority> auths = new ArrayList<>();
         
-        // Parcourir tous les rôles
+        // Dédupliquer les rôles pour éviter les autorités en doublon.
+        Set<String> seenRoles = new java.util.HashSet<>();
         user.getRoles().forEach(role -> {
-            GrantedAuthority authority = new SimpleGrantedAuthority(role.getRole());
-            auths.add(authority);
-            System.out.println("🎭 Rôle ajouté: " + role.getRole());
+            String roleName = role.getRole();
+            if (seenRoles.add(roleName)) {
+                GrantedAuthority authority = new SimpleGrantedAuthority(roleName);
+                auths.add(authority);
+                System.out.println("🎭 Rôle ajouté: " + roleName);
+            }
         });
         
         System.out.println("📋 Création de UserDetails pour Spring Security");

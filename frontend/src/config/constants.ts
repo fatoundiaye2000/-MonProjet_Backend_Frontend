@@ -6,7 +6,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:80
 // Endpoints de l'API
 export const API_ENDPOINTS = {
   // Authentification
-  LOGIN: '/login',
+  LOGIN: '/api/users/login',
 
   // Utilisateurs
   USERS: '/api/users/all',
@@ -51,4 +51,4 @@ export const ERROR_MESSAGES = {
   TOKEN_EXPIRED: 'Session expirée, veuillez vous reconnecter',
   EMAIL_EXISTS: 'Cet email est déjà utilisé',
   REQUIRED_FIELD: 'Ce champ est obligatoire',
-} as const;
+} as const; 

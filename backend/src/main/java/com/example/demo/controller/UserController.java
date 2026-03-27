@@ -4,6 +4,7 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.dto.Request.RegistrationRequestDTO;
 import com.example.demo.entities.User;
 import com.example.demo.service.UserService;
+import com.example.demo.security.SecParams;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,21 +35,21 @@ public class UserController {
         return ResponseEntity.ok("Le contrôleur fonctionne !");
     }
     
-    @GetMapping("/login")
+    @GetMapping({"/login", "/api/users/login"})
     public ResponseEntity<Map<String, String>> testLoginGet() {
-        System.out.println("✅ GET /login appelé");
+        System.out.println("✅ GET /api/users/login appelé");
         Map<String, String> response = new HashMap<>();
         response.put("message", "Utilisez POST pour vous connecter");
         response.put("method", "POST");
-        response.put("endpoint", "/login");
+        response.put("endpoint", "/api/users/login");
         return ResponseEntity.ok(response);
     }
 
     // ========== ENDPOINT LOGIN ==========
-    @PostMapping("/login")
+    @PostMapping({"/login", "/api/users/login"})
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         System.out.println("==========================================");
-        System.out.println("🚀 POST /login APPELÉ");
+        System.out.println("🚀 POST /api/users/login APPELÉ");
         System.out.println("==========================================");
         
         try {
@@ -73,6 +74,7 @@ public class UserController {
             
             Authentication authentication = authenticationManager.authenticate(authToken);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User authenticatedUser = userService.findUserByEmail(userDetails.getUsername());
             
             System.out.println("✅ Authentification réussie pour: " + userDetails.getUsername());
             
@@ -89,14 +91,16 @@ public class UserController {
                 .withSubject(userDetails.getUsername())
                 .withArrayClaim("roles", roles.toArray(new String[0]))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 24 * 60 * 60 * 1000))
-                .sign(Algorithm.HMAC256("exampleb@yahoo.com"));
+                .sign(Algorithm.HMAC256(SecParams.SECRET));
             
             System.out.println("🎫 Token JWT généré");
             
             // Réponse
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
-            response.put("username", userDetails.getUsername());
+            response.put("email", userDetails.getUsername());
+            response.put("nom", authenticatedUser != null ? authenticatedUser.getNom() : null);
+            response.put("prenom", authenticatedUser != null ? authenticatedUser.getPrenom() : null);
             response.put("roles", roles);
             
             System.out.println("📤 Réponse envoyée avec succès");

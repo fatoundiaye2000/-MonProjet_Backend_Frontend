@@ -130,14 +130,14 @@ export default function DashboardEvenements() {
                 </div>
               ) : (
                 events.map((event) => (
-                  <div key={event.id_event} className="p-6 hover:bg-gray-50 transition-colors">
+                  <div key={event.idEvent} className="p-6 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start space-x-6">
                       {/* Image */}
                       <div className="flex-shrink-0">
                         <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-200">
                           <img
                             src={getEventImage(event)}
-                            alt={event.titre_event}
+                            alt={event.titreEvent}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               e.currentTarget.src = uploadService.getDefaultFallback();
@@ -150,11 +150,11 @@ export default function DashboardEvenements() {
                       <div className="flex-1">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">{event.titre_event}</h3>
+                            <h3 className="text-lg font-bold text-gray-900">{event.titreEvent}</h3>
                             <p className="text-gray-600 mt-1 line-clamp-2">{event.description}</p>
                           </div>
                           <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full">
-                            {event.type_event?.nom_type || 'Non spécifié'}
+                            {event.typeEvent?.nomType || 'Non spécifié'}
                           </span>
                         </div>
 
@@ -163,7 +163,7 @@ export default function DashboardEvenements() {
                             <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span className="text-sm text-gray-700">{formatDate(event.date_debut)}</span>
+                            <span className="text-sm text-gray-700">{formatDate(event.dateDebut)}</span>
                           </div>
                           <div className="flex items-center">
                             <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,26 +176,26 @@ export default function DashboardEvenements() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span className="text-sm text-gray-700">
-                              {event.tarif?.montant === 0 ? 'Gratuit' : `${event.tarif?.montant || '?'}€`}
+                              {event.tarif?.prix === 0 ? 'Gratuit' : `${event.tarif?.prix ?? '?'}€`}
                             </span>
                           </div>
                           <div className="flex items-center">
                             <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span className="text-sm text-gray-700">{event.nb_place || '?'} places</span>
+                            <span className="text-sm text-gray-700">{event.nbPlace ?? '?'} places</span>
                           </div>
                         </div>
 
                         <div className="mt-6 flex space-x-3">
                           <Link
-                            to={`/events/${event.id_event}`}
+                            to={`/events/${event.idEvent}`}
                             className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm"
                           >
                             Voir détails
                           </Link>
                           <Link
-                            to={`/events/${event.id_event}/edit`}
+                            to={`/events/${event.idEvent}/edit`}
                             className="px-4 py-2 border border-yellow-600 text-yellow-600 rounded-lg hover:bg-yellow-50 transition-colors text-sm"
                           >
                             Modifier

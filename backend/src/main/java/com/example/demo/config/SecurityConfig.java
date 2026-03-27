@@ -119,6 +119,7 @@ public class SecurityConfig {
                     // =========================================================
                     .requestMatchers("/test").permitAll()
                     .requestMatchers("/login").permitAll()
+                    .requestMatchers("/api/users/login").permitAll()
                     .requestMatchers("/error").permitAll()
                     .requestMatchers("/favicon.ico").permitAll()
                     

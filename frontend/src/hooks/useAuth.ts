@@ -1,16 +1,16 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect, useCallback } from 'react';
 import authService from '../services/auth.service';
-import { RegisterRequest } from '../types/auth.types';
+import { RegisterRequest, AuthUser } from '../types/auth.types';
 import { STORAGE_KEYS } from '../config/constants'; // ✅ IMPORTATION AJOUTÉE
 
 interface UseAuthReturn {
   token: string | null;
-  user: { username: string; roles: string[] } | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
   clearError: () => void;
@@ -20,7 +20,7 @@ interface UseAuthReturn {
 export const useAuth = (): UseAuthReturn => {
   // États
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<{ username: string; roles: string[] } | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,28 +63,15 @@ export const useAuth = (): UseAuthReturn => {
   /**
    * FONCTION 1 : LOGIN
    */
-  const login = useCallback(async (username: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      console.log('🔑 [useAuth] Début login...');
-      const decoded = await authService.login(username, password);
+      const loggedUser = await authService.login(email, password);
       const newToken = authService.getToken();
-      
-      console.log('✅ [useAuth] Login réussi');
-      console.log('📊 [useAuth] Token:', newToken ? '✓ Présent' : '✗ Absent');
-      console.log('📊 [useAuth] User:', decoded);
-      
       setToken(newToken);
-      setUser({
-        username: decoded.sub,
-        roles: decoded.roles,
-      });
-      
-      // Debug après login
-      console.log('🔍 [useAuth] localStorage après login - auth_token:', localStorage.getItem(STORAGE_KEYS.TOKEN));
-      console.log('🔍 [useAuth] localStorage après login - user_data:', localStorage.getItem(STORAGE_KEYS.USER));
+      setUser(loggedUser);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur de connexion';
       setError(errorMessage);
@@ -104,7 +91,7 @@ export const useAuth = (): UseAuthReturn => {
     
     try {
       await authService.register(data);
-      await login(data.nom, data.motDePasse);
+      await login(data.email, data.motDePasse);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur d\'inscription';
       setError(errorMessage);

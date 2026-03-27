@@ -70,12 +70,12 @@ export default function Events() {
       setModalLoading(true);
       
       if (selectedEvent) {
-        const updateData: UpdateEvenementDto = {
-          ...data,
-          id_event: selectedEvent.id_event
-        };
-        await apiService.updateEvenement(selectedEvent.id_event, updateData);
-        console.log(`📝 Événement ${selectedEvent.id_event} mis à jour`);
+        // `updateEvenement` injecte déjà `idEvent` dans le payload
+        await apiService.updateEvenement(
+          selectedEvent.idEvent,
+          data as Omit<UpdateEvenementDto, 'idEvent'>
+        );
+        console.log(`📝 Événement ${selectedEvent.idEvent} mis à jour`);
       } else {
         await apiService.createEvenement(data as CreateEvenementDto);
         console.log('📝 Nouvel événement créé');
@@ -136,7 +136,7 @@ export default function Events() {
 
   // 🔥 FONCTION CORRIGÉE : Utilise UNIQUEMENT vos VRAIES images Spring Boot
   const getEventImage = (event: Evenement): string => {
-    console.log(`🖼️ Recherche image pour: ${event.titre_event}`);
+    console.log(`🖼️ Recherche image pour: ${event.titreEvent}`);
     
     // 1. Si l'événement a déjà une image
     if (event.image && event.image.trim() !== '') {
@@ -147,8 +147,8 @@ export default function Events() {
     
     // 2. Vérifier si une image similaire existe dans le backend
     if (backendImages.length > 0) {
-      const eventType = event.type_event?.nom_type?.toLowerCase() || '';
-      const eventTitle = event.titre_event?.toLowerCase() || '';
+      const eventType = event.typeEvent?.nomType?.toLowerCase() || '';
+      const eventTitle = event.titreEvent?.toLowerCase() || '';
       
       // Chercher une image pertinente
       const relevantImage = backendImages.find(img => {
@@ -170,8 +170,8 @@ export default function Events() {
     }
     
     // 3. Basé sur le type d'événement (avec vos VRAIES images Spring Boot)
-    const typeName = event.type_event?.nom_type || '';
-    const title = event.titre_event?.toLowerCase() || '';
+    const typeName = event.typeEvent?.nomType || '';
+    const title = event.titreEvent?.toLowerCase() || '';
     
     console.log(`   → Type: ${typeName}, Titre: ${title}`);
     
@@ -347,12 +347,12 @@ export default function Events() {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {events.map((event) => (
-                        <tr key={event.id_event} className="hover:bg-gray-50 transition-colors">
+                        <tr key={event.idEvent} className="hover:bg-gray-50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="relative group">
                               <img
                                 src={getEventImage(event)}
-                                alt={event.titre_event}
+                                alt={event.titreEvent}
                                 className="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-sm"
                                 onError={handleImageError}
                                 loading="lazy"
@@ -365,10 +365,10 @@ export default function Events() {
                                 </div>
                               )}
                               {/* Badge type d'événement */}
-                              {event.type_event?.nom_type && (
+                              {event.typeEvent?.nomType && (
                                 <div className="absolute -top-1 -right-1">
                                   <span className="px-2 py-1 text-xs bg-purple-600 text-white rounded-full">
-                                    {event.type_event.nom_type.charAt(0)}
+                                    {event.typeEvent.nomType.charAt(0)}
                                   </span>
                                 </div>
                               )}
@@ -376,31 +376,31 @@ export default function Events() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex flex-col">
-                              <div className="text-sm font-semibold text-gray-900">{event.titre_event}</div>
+                              <div className="text-sm font-semibold text-gray-900">{event.titreEvent}</div>
                               <div className="text-gray-500 text-xs truncate max-w-xs mt-1 line-clamp-2">
                                 {event.description || 'Aucune description'}
                               </div>
-                              {event.type_event?.nom_type && (
+                              {event.typeEvent?.nomType && (
                                 <div className="mt-2">
                                   <span className="inline-block px-2 py-1 text-xs bg-purple-50 text-purple-700 border border-purple-100 rounded">
-                                    {event.type_event.nom_type}
+                                    {event.typeEvent.nomType}
                                   </span>
                                 </div>
                               )}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <div className="font-medium">{formatDate(event.date_debut)}</div>
-                            {event.date_fin && event.date_fin !== event.date_debut && (
+                            <div className="font-medium">{formatDate(event.dateDebut)}</div>
+                            {event.dateFin && event.dateFin !== event.dateDebut && (
                               <div className="text-xs text-gray-500 mt-1">
-                                au {formatDate(event.date_fin)}
+                                au {formatDate(event.dateFin)}
                               </div>
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {event.date_fin ? (
+                            {event.dateFin ? (
                               <span className="px-2 py-1 text-xs bg-green-50 text-green-800 border border-green-100 rounded">
-                                {formatDate(event.date_fin)}
+                                {formatDate(event.dateFin)}
                               </span>
                             ) : (
                               <span className="text-gray-400 text-sm">Non définie</span>
@@ -409,20 +409,20 @@ export default function Events() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                                event.nb_place > 50 
+                                (event.nbPlace || 0) > 50 
                                   ? 'bg-green-100 text-green-800 border border-green-200' 
-                                  : event.nb_place > 10 
+                                  : (event.nbPlace || 0) > 10 
                                   ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                                   : 'bg-red-100 text-red-800 border border-red-200'
                               }`}>
-                                {event.nb_place} {event.nb_place === 1 ? 'place' : 'places'}
+                                {event.nbPlace || 0} {(event.nbPlace || 0) === 1 ? 'place' : 'places'}
                               </span>
-                              {event.nb_place < 20 && event.nb_place > 0 && (
+                              {(event.nbPlace || 0) < 20 && (event.nbPlace || 0) > 0 && (
                                 <span className="ml-2 text-xs text-red-500 animate-pulse">
                                   ⚠️ Bientôt complet
                                 </span>
                               )}
-                              {event.nb_place === 0 && (
+                              {(event.nbPlace || 0) === 0 && (
                                 <span className="ml-2 text-xs text-gray-500">
                                   Illimité
                                 </span>
@@ -442,7 +442,7 @@ export default function Events() {
                                 Modifier
                               </button>
                               <button
-                                onClick={() => handleDelete(event.id_event)}
+                                onClick={() => handleDelete(event.idEvent)}
                                 className="px-3 py-1.5 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition-colors flex items-center text-xs"
                                 title="Supprimer"
                               >

@@ -221,7 +221,6 @@ export default function Dashboard() {
                         { action: 'inscription',        label: '👥 Inscription événement',  color: 'yellow'  },
                         { action: 'mes-reservations',   label: '🎫 Les réservations',       color: 'teal'    },
                         { action: 'creer',              label: '➕ Créer un événement',     color: 'emerald' },
-                        { action: 'statistiques',       label: '📊 Statistiques',           color: 'indigo'  },
                         { action: 'parametres',         label: '⚙️ Paramètres',             color: 'gray'    },
                       ].map(item => (
                         <button

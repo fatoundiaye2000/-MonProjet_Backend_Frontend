@@ -34,7 +34,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
         
         // Ne pas filtrer les endpoints publics
-        return path.equals("/login") || 
+        return path.equals("/login") ||
+               path.equals("/api/users/login") ||
                path.equals("/test") ||
                path.startsWith("/api/users/register") ||
                path.startsWith("/api/test") ||
@@ -66,7 +67,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             String jwt = authHeader.substring(7);
             System.out.println("🔐 Vérification du token pour: " + request.getServletPath());
             
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256("exampleb@yahoo.com")).build();
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SecParams.SECRET)).build();
             DecodedJWT decodedJWT = verifier.verify(jwt);
             
             // Récupérer les infos du token

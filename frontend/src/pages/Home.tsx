@@ -205,7 +205,6 @@ export default function Home() {
     { emoji:'👥', label:'Inscription événement', from:'#fb923c', to:'#f59e0b', action: () => goGuard('/events') },
     { emoji:'🎫', label:'Les réservations',      from:'#ea580c', to:'#f97316', action: () => goGuard('/mes-reservations') },
     { emoji:'➕', label:'Créer un événement',    from:'#f97316', to:'#f59e0b', action: () => goGuard('/create-event') },
-    { emoji:'📈', label:'Statistiques',          from:'#f59e0b', to:'#ea580c', action: () => goGuard('/statistiques') },
     { emoji:'⚙️', label:'Paramètres',            from:'#78350f', to:'#92400e', action: () => goGuard('/parametres') },
   ];
 
@@ -389,7 +388,7 @@ export default function Home() {
 
             <div style={{ display:'flex', justifyContent:'center', gap:16, flexWrap:'wrap', animation:'fadeUp 0.7s ease 0.55s both' }}>
               {isLoggedIn
-                ? <><Link to="/dashboard/evenements" className="btn-hero-primary">🎉 Voir les événements</Link><Link to="/dashboard" className="btn-hero-ghost">Tableau de bord</Link></>
+                ? <><Link to="/dashboard/evenements" className="btn-hero-primary">🎉 Voir les événements</Link></>
                 : <><Link to="/register" className="btn-hero-primary">🚀 Créer un compte</Link><a href="#evenements" className="btn-hero-ghost">Découvrir les événements</a></>
               }
             </div>

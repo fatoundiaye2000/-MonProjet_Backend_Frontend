@@ -19,9 +19,10 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+  email: string;
+  nom: string;
+  prenom: string;
   roles: string[];
-  username?: string;
-  email?: string;
 }
 
 export interface User {
@@ -37,4 +38,11 @@ export interface DecodedToken {
   roles: string[];
   exp: number;
   iat: number;
+}
+
+export interface AuthUser {
+  email: string;
+  nom: string;
+  prenom: string;
+  roles: string[];
 }
