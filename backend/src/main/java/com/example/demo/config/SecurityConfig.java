@@ -64,7 +64,8 @@ public class SecurityConfig {
     "http://localhost:5173",
     "http://localhost:3000",
     "http://127.0.0.1:5173",
-    "https://mon-projet-backend-frontend-spyr.vercel.app"
+    "https://mon-projet-backend-frontend-spyr.vercel.app",
+    "https://mon-projet-backend-frontend.vercel.app"
 ));
 
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));

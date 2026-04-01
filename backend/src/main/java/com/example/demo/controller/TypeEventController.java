@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/typeEvents")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:4200", "https://mon-projet-backend-frontend-spyr.vercel.app"})
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:4200", "https://mon-projet-backend-frontend-spyr.vercel.app", "https://mon-projet-backend-frontend.vercel.app"})
 public class TypeEventController {
     
     @Autowired
