@@ -1,9 +1,9 @@
 // src/services/upload.service.ts
 import axios, { AxiosError } from 'axios';
-import { STORAGE_KEYS } from '../config/constants'; // ✅ IMPORTATION AJOUTÉE
+import { STORAGE_KEYS, API_BASE_URL } from '../config/constants'; // ✅ IMPORTATION AJOUTÉE
 
 // URL DIRECTE vers votre backend Spring Boot
-const BACKEND_URL = 'http://localhost:8081';
+const BACKEND_URL = API_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL: BACKEND_URL,
