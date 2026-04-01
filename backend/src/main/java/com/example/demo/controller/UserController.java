@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "https://mon-projet-backend-frontend-spyr.vercel.app", "https://mon-projet-backend-frontend.vercel.app"})
+@CrossOrigin(origins = {"http://localhost:*", "https://*.vercel.app"}, allowCredentials = "true")
 public class UserController {
     
     @Autowired

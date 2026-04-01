@@ -60,13 +60,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:5173",
-    "https://mon-projet-backend-frontend-spyr.vercel.app",
-    "https://mon-projet-backend-frontend.vercel.app"
-));
+        
+        // ✅ ACCEPTER TOUTES LES SOURCES VERCEL + localhost
+        config.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "https://*.vercel.app",
+            "https://mon-projet-backend-frontend*.vercel.app"
+        ));
 
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));

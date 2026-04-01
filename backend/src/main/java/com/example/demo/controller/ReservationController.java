@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservations")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000", "http://localhost:4200", "https://mon-projet-backend-frontend-spyr.vercel.app", "https://mon-projet-backend-frontend.vercel.app"})
+@CrossOrigin(originPatterns = {"http://localhost:*", "https://*.vercel.app"}, allowCredentials = "true")
 public class ReservationController {
     
     @Autowired
