@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: backend-evenix
+    env: java
+    buildCommand: cd backend && ./mvnw clean package -DskipTests
+    startCommand: java -jar backend/target/demo-4-0.0.1-SNAPSHOT.jar --spring.profiles.active=h2
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: h2
+      - key: JAVA_OPTS
+        value: -Djava.awt.headless=true
