@@ -52,27 +52,32 @@ const uploadService = {
   // URL DE BASE - IMPORTEMENT VOTRE BACKEND
   BASE_URL: BACKEND_URL,
   
-  // 🚨 VAS VRAIES IMAGES DU BACKEND (NOUVELLES - VIENT D'ÊTRE UPLOADÉES)
+  // 🎯 IMAGES SUR CLOUDINARY (PERMANENTES ET RAPIDES!)
   BACKEND_IMAGES: [
-    "event_1775162630995_1254abee.jpg",
-    "event_1775162631496_9874b869.jpg",
-    "event_1775162632003_9acedd54.jpg",
-    "event_1775162632395_6f101460.png",
-    "event_1775162632895_79d05a41.jpg"
+    "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163928/evenix/images/rsb8uuadf0zparn53uwe.jpg",
+    "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163929/evenix/images/bnkbquay4lyrwp7vziyr.jpg",
+    "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163930/evenix/images/blfc1daeyvkxlk5y1ga7.jpg",
+    "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163930/evenix/images/iadx0yuf7pbgdzj7xeog.png",
+    "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163931/evenix/images/pjfi2p5ejw6gh996iabb.jpg"
   ],
 
-  // 🔥 FONCTION PRINCIPALE : Obtenir l'URL d'une image
+  // 🔥 FONCTION PRINCIPALE : Obtenir l'URL d'une image (Cloudinary ou locale)
   getImageUrl(filename: string): string {
     if (!filename || filename.trim() === '') {
       return this.getRandomBackendImage();
     }
     
-    // Si déjà une URL complète
+    // Si c'est déjà une URL complète Cloudinary ou HTTP
     if (filename.startsWith('http')) {
       return filename;
     }
     
-    // URL VERS VOTRE BACKEND SPRING BOOT
+    // Si c'est un public_id Cloudinary (ex: evenix/images/rsb8uuadf0zparn53uwe)
+    if (filename.includes('/')) {
+      return `https://res.cloudinary.com/dgr0kva7h/image/upload/${filename}`;
+    }
+    
+    // Fallback sur le backend local (pour compatibilité)
     return `${this.BASE_URL}/files/${filename}`;
   },
 
@@ -85,22 +90,22 @@ const uploadService = {
     return `${this.BASE_URL}/files/${this.BACKEND_IMAGES[randomIndex]}`;
   },
 
-  // 🔥 Récupérer une image par type d'événement (avec les NOUVEAUX noms réels)
+  // 🔥 Récupérer une image par type d'événement (depuis Cloudinary)
   getImageForEventType(eventType: string): string {
     const lowerType = eventType.toLowerCase();
     
-    // Mapping avec les NOUVEAUX noms du backend (vient d'être uploadé)
+    // Mapping avec les images Cloudinary
     if (lowerType.includes('festival') || lowerType.includes('jazz') || lowerType.includes('concert')) {
-      return `${this.BASE_URL}/files/event_1775162631496_9874b869.jpg`;
+      return "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163929/evenix/images/bnkbquay4lyrwp7vziyr.jpg";
     }
     if (lowerType.includes('exposition') || lowerType.includes('art') || lowerType.includes('galerie')) {
-      return `${this.BASE_URL}/files/event_1775162632395_6f101460.png`;
+      return "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163930/evenix/images/iadx0yuf7pbgdzj7xeog.png";
     }
     if (lowerType.includes('spectacle') || lowerType.includes('danse') || lowerType.includes('théâtre')) {
-      return `${this.BASE_URL}/files/event_1775162632003_9acedd54.jpg`;
+      return "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163930/evenix/images/blfc1daeyvkxlk5y1ga7.jpg";
     }
     if (lowerType.includes('conférence') || lowerType.includes('séminaire') || lowerType.includes('atelier')) {
-      return `${this.BASE_URL}/files/event_1775162632895_79d05a41.jpg`;
+      return "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163931/evenix/images/pjfi2p5ejw6gh996iabb.jpg";
     }
     
     // Par défaut, image aléatoire

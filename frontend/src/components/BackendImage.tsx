@@ -98,16 +98,16 @@ export default function BackendImage({
 
     setError(true);
     
-    // 🔥 AMÉLIORATION : Fallback intelligent selon le type (avec les NOUVEAUX noms)
+    // 🔥 AMÉLIORATION : Fallback intelligent avec URLs Cloudinary
     let fallbackUrl = '';
     
     if (eventType) {
       // Essayer une image par type
       fallbackUrl = uploadService.getImageForEventType(eventType);
     } else if (filename && filename.includes('festival')) {
-      fallbackUrl = uploadService.getImageUrl("event_1775162631496_9874b869.jpg");
+      fallbackUrl = "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163929/evenix/images/bnkbquay4lyrwp7vziyr.jpg";
     } else if (filename && (filename.includes('exposition') || filename.includes('art'))) {
-      fallbackUrl = uploadService.getImageUrl("event_1775162632395_6f101460.png");
+      fallbackUrl = "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163930/evenix/images/iadx0yuf7pbgdzj7xeog.png";
     } else {
       // Image par défaut
       fallbackUrl = uploadService.getDefaultFallback();

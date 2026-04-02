@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.example.demo.service.FileStorageService;
+import com.example.demo.service.CloudinaryService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.file.Files;
@@ -26,6 +27,9 @@ public class FileUploadController {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     // Chemin du dossier uploads
     private final Path uploadPath = Paths.get("uploads/images");
@@ -127,11 +131,11 @@ public class FileUploadController {
     }
 
     /**
-     * ENDPOINT : Upload simple
+     * ENDPOINT : Upload simple via Cloudinary
      */
     @PostMapping("/upload-simple")
     public ResponseEntity<?> uploadSimple(@RequestParam("file") MultipartFile file) {
-        System.out.println("=== UPLOAD SIMPLE ===");
+        System.out.println("=== UPLOAD SIMPLE VIA CLOUDINARY ===");
         
         try {
             if (file == null || file.isEmpty()) {
@@ -140,13 +144,24 @@ public class FileUploadController {
             
             System.out.println("✅ Fichier reçu: " + file.getOriginalFilename());
             
-            // Sauvegarder
-            String filename = fileStorageService.storeFile(file);
+            // Upload vers Cloudinary
+            Map<String, Object> uploadResult = cloudinaryService.uploadFile(file);
             
             Map<String, String> response = new HashMap<>();
-            response.put("filename", filename);
-            response.put("url", "http://localhost:8081/files/" + filename);
+            response.put("filename", (String) uploadResult.get("public_id"));
+            response.put("url", (String) uploadResult.get("secure_url"));
             response.put("message", "Upload réussi!");
+            response.put("cloudinary_url", (String) uploadResult.get("secure_url"));
+            
+            System.out.println("✅ Réponse: " + response);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Erreur upload: " + e.getMessage());
+            return ResponseEntity.status(500).body(createError("Erreur: " + e.getMessage()));
+        }
+    }
             
             return ResponseEntity.ok(response);
             

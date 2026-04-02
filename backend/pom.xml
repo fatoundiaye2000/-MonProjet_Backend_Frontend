@@ -128,6 +128,13 @@
             <version>2.7.0</version>
         </dependency>
 
+        <!-- 🎯 Cloudinary pour stockage d'images permanent -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.36.0</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
