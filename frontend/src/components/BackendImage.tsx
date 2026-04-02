@@ -98,16 +98,16 @@ export default function BackendImage({
 
     setError(true);
     
-    // 🔥 AMÉLIORATION : Fallback intelligent selon le type
+    // 🔥 AMÉLIORATION : Fallback intelligent selon le type (avec les vrais noms)
     let fallbackUrl = '';
     
     if (eventType) {
       // Essayer une image par type
       fallbackUrl = uploadService.getImageForEventType(eventType);
     } else if (filename && filename.includes('festival')) {
-      fallbackUrl = uploadService.getImageUrl("event_1775157086865_6d869708.jpg");
+      fallbackUrl = uploadService.getImageUrl("event_1767732256076_7594c16a.jpg");
     } else if (filename && (filename.includes('exposition') || filename.includes('art'))) {
-      fallbackUrl = uploadService.getImageUrl("event_1775157087588_c4c89adc.png");
+      fallbackUrl = uploadService.getImageUrl("event_1767732541267_a1d12c20.png");
     } else {
       // Image par défaut
       fallbackUrl = uploadService.getDefaultFallback();

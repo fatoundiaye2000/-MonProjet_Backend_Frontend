@@ -52,13 +52,13 @@ const uploadService = {
   // URL DE BASE - IMPORTEMENT VOTRE BACKEND
   BASE_URL: BACKEND_URL,
   
-  // 🚨 VOS VRAIES IMAGES DU BACKEND (AVEC LES NOUVEAUX NOMS)
+  // 🚨 VOS VRAIES IMAGES DU BACKEND (NOMS RÉELS)
   BACKEND_IMAGES: [
-    "event_1775157086525_836161b3.jpg",
-    "event_1775157086865_6d869708.jpg",
-    "event_1775157087309_16fb07a7.jpg",
-    "event_1775157087588_c4c89adc.png",
-    "event_1775157087962_51a16330.jpg"
+    "event_1767731725433_f04f6f9c.jpg",
+    "event_1767732256076_7594c16a.jpg",
+    "event_1767732304324_ee1f3d49.jpg",
+    "event_1767732541267_a1d12c20.png",
+    "event_1767732568405_8b853f8f.jpg"
   ],
 
   // 🔥 FONCTION PRINCIPALE : Obtenir l'URL d'une image
@@ -85,22 +85,22 @@ const uploadService = {
     return `${this.BASE_URL}/files/${this.BACKEND_IMAGES[randomIndex]}`;
   },
 
-  // 🔥 Récupérer une image par type d'événement (avec les NOUVEAUX noms)
+  // 🔥 Récupérer une image par type d'événement (avec les ANCIENS noms réels)
   getImageForEventType(eventType: string): string {
     const lowerType = eventType.toLowerCase();
     
-    // Mapping avec les NOUVEAUX noms du backend
+    // Mapping avec les VRAIS noms du backend (les anciens)
     if (lowerType.includes('festival') || lowerType.includes('jazz') || lowerType.includes('concert')) {
-      return `${this.BASE_URL}/files/event_1775157086865_6d869708.jpg`;
+      return `${this.BASE_URL}/files/event_1767732256076_7594c16a.jpg`;
     }
     if (lowerType.includes('exposition') || lowerType.includes('art') || lowerType.includes('galerie')) {
-      return `${this.BASE_URL}/files/event_1775157087588_c4c89adc.png`;
+      return `${this.BASE_URL}/files/event_1767732541267_a1d12c20.png`;
     }
     if (lowerType.includes('spectacle') || lowerType.includes('danse') || lowerType.includes('théâtre')) {
-      return `${this.BASE_URL}/files/event_1775157087309_16fb07a7.jpg`;
+      return `${this.BASE_URL}/files/event_1767732304324_ee1f3d49.jpg`;
     }
     if (lowerType.includes('conférence') || lowerType.includes('séminaire') || lowerType.includes('atelier')) {
-      return `${this.BASE_URL}/files/event_1775157087962_51a16330.jpg`;
+      return `${this.BASE_URL}/files/event_1767732568405_8b853f8f.jpg`;
     }
     
     // Par défaut, image aléatoire
