@@ -162,13 +162,6 @@ public class FileUploadController {
             return ResponseEntity.status(500).body(createError("Erreur: " + e.getMessage()));
         }
     }
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(createError("Erreur: " + e.getMessage()));
-        }
-    }
 
     /**
      * ENDPOINT : Tester l'accès aux fichiers
