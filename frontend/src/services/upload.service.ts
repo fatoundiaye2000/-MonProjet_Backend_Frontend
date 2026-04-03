@@ -52,6 +52,16 @@ const uploadService = {
   // URL DE BASE - IMPORTEMENT VOTRE BACKEND
   BASE_URL: BACKEND_URL,
   
+  // 🎯 MAPPING: Anciens noms locaux → URLs Cloudinary
+  // Cela convertit les anciens noms de fichiers sauvegardés en BD vers Cloudinary
+  legacyImageMapping: {
+    "event_1767731725433_f04f6f9c.jpg": "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163928/evenix/images/rsb8uuadf0zparn53uwe.jpg",
+    "event_1767732256076_7594c16a.jpg": "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163929/evenix/images/bnkbquay4lyrwp7vziyr.jpg",
+    "event_1767732304324_ee1f3d49.jpg": "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163930/evenix/images/blfc1daeyvkxlk5y1ga7.jpg",
+    "event_1767732541267_a1d12c20.png": "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163930/evenix/images/iadx0yuf7pbgdzj7xeog.png",
+    "event_1767732568405_8b853f8f.jpg": "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163931/evenix/images/pjfi2p5ejw6gh996iabb.jpg"
+  },
+  
   // 🎯 IMAGES SUR CLOUDINARY (PERMANENTES ET RAPIDES!)
   BACKEND_IMAGES: [
     "https://res.cloudinary.com/dgr0kva7h/image/upload/v1775163928/evenix/images/rsb8uuadf0zparn53uwe.jpg",
@@ -67,17 +77,23 @@ const uploadService = {
       return this.getRandomBackendImage();
     }
     
-    // Si c'est déjà une URL complète Cloudinary ou HTTP
+    // 1️⃣ Si c'est déjà une URL complète
     if (filename.startsWith('http')) {
       return filename;
     }
     
-    // Si c'est un public_id Cloudinary (ex: evenix/images/rsb8uuadf0zparn53uwe)
+    // 2️⃣ Si c'est un ancien nom de fichier local, retourner l'URL Cloudinary correspondante
+    if (this.legacyImageMapping[filename]) {
+      console.log(`🔄 Conversion ancien nom vers Cloudinary: ${filename}`);
+      return this.legacyImageMapping[filename];
+    }
+    
+    // 3️⃣ Si c'est un public_id Cloudinary (ex: evenix/images/rsb8uuadf0zparn53uwe)
     if (filename.includes('/')) {
       return `https://res.cloudinary.com/dgr0kva7h/image/upload/${filename}`;
     }
     
-    // Fallback sur le backend local (pour compatibilité)
+    // 4️⃣ Fallback sur le backend local (pour compatibilité)
     return `${this.BASE_URL}/files/${filename}`;
   },
 
