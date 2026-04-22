@@ -304,7 +304,7 @@ const DashboardPage: React.FC = () => {
           { label:'Utilisateurs actifs',  value:stats.activeUsers,       emoji:'👥', g1:'#f59e0b', g2:'#f97316', sh:'rgba(245,158,11,0.32)'  },
           { label:'Revenus estimés',      value:`${stats.revenue}€`,     emoji:'💰', g1:'#fbbf24', g2:'#f97316', sh:'rgba(251,191,36,0.32)'  },
         ].map((s,i)=>(
-          <div key={i} style={{ borderRadius:22, padding:'24px 22px', background:'#fff', border:'2px solid #fde8d8', boxShadow:'0 4px 18px rgba(249,115,22,0.07)', cursor:'default', opacity:mounted?1:0, transform:mounted?'translateY(0)':'translateY(20px)', transition:`opacity 0.55s ease ${0.1+i*0.08}s, transform 0.55s ease ${0.1+i*0.08}s, box-shadow 0.25s, border-color 0.25s` }}
+          <div key={s.label} style={{ borderRadius:22, padding:'24px 22px', background:'#fff', border:'2px solid #fde8d8', boxShadow:'0 4px 18px rgba(249,115,22,0.07)', cursor:'default', opacity:mounted?1:0, transform:mounted?'translateY(0)':'translateY(20px)', transition:`opacity 0.55s ease ${0.1+i*0.08}s, transform 0.55s ease ${0.1+i*0.08}s, box-shadow 0.25s, border-color 0.25s` }}
             onMouseEnter={e=>{const el=e.currentTarget as HTMLElement;el.style.boxShadow=`0 22px 52px ${s.sh}`;el.style.borderColor=`${s.g1}45`;el.style.transform='translateY(-7px)';}}
             onMouseLeave={e=>{const el=e.currentTarget as HTMLElement;el.style.boxShadow='0 4px 18px rgba(249,115,22,0.07)';el.style.borderColor='#fde8d8';el.style.transform='translateY(0)';}}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
@@ -442,8 +442,8 @@ const DashboardPage: React.FC = () => {
           <input type="text" value={userSearch} onChange={e=>setUserSearch(e.target.value)} placeholder="Rechercher un utilisateur…" style={{ width:'100%', paddingLeft:42, paddingRight:16, paddingTop:11, paddingBottom:11, borderRadius:14, border:'2px solid #fde8d8', fontSize:14, color:'#1c0a00', background:'#fff8f0', outline:'none', fontFamily:"'DM Sans',sans-serif", boxSizing:'border-box', transition:'all 0.2s' }} onFocus={e=>{e.target.style.borderColor='#f97316';e.target.style.boxShadow='0 0 0 4px rgba(249,115,22,0.15)';}} onBlur={e=>{e.target.style.borderColor='#fde8d8';e.target.style.boxShadow='none';}} />
         </div>
         {[{val:roleFilter,set:setRoleFilter,opts:['Tous les rôles','Admin','Organisateur','Utilisateur']},{val:statusFilter,set:setStatusFilter,opts:['Tous les statuts','Actif','Inactif','Suspendu']}].map((sel,si)=>(
-          <select key={si} value={sel.val} onChange={e=>sel.set(e.target.value)} style={{ padding:'11px 16px', borderRadius:14, border:'2px solid #fde8d8', fontSize:13, fontWeight:600, color:'#78350f', background:'#fff8f0', outline:'none', cursor:'pointer', fontFamily:"'DM Sans',sans-serif" }}>
-            {sel.opts.map(o=><option key={o}>{o}</option>)}
+          <select key={`filter-${si}`} value={sel.val} onChange={e=>sel.set(e.target.value)} style={{ padding:'11px 16px', borderRadius:14, border:'2px solid #fde8d8', fontSize:13, fontWeight:600, color:'#78350f', background:'#fff8f0', outline:'none', cursor:'pointer', fontFamily:"'DM Sans',sans-serif" }}>
+            {sel.opts.map((o,oi)=><option key={`opt-${si}-${oi}`}>{o}</option>)}
           </select>
         ))}
       </div>
@@ -467,8 +467,8 @@ const DashboardPage: React.FC = () => {
                     <td style={{ padding:'14px 18px', fontSize:12, color:'#c2410c', fontWeight:700 }}>{u.id}</td>
                     <td style={{ padding:'14px 18px' }}><div style={{ display:'flex', alignItems:'center', gap:12 }}><div style={{ width:40, height:40, borderRadius:13, background:UG[(u.id-1)%UG.length], display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:900, fontSize:16, flexShrink:0 }}>{u.name.charAt(0)}</div><span style={{ fontSize:14, fontWeight:700, color:'#1c0a00' }}>{u.name}</span></div></td>
                     <td style={{ padding:'14px 18px', fontSize:13, color:'#78350f' }}>{u.email}</td>
-                    <td style={{ padding:'14px 18px' }}><select value={u.role} onChange={e=>updRole(u.id,e.target.value as User['role'])} style={{ padding:'5px 12px', borderRadius:100, fontSize:12, fontWeight:700, color:RS[u.role].color, background:RS[u.role].bg, border:'none', cursor:'pointer', outline:'none', fontFamily:"'DM Sans',sans-serif" }}><option value="admin">👑 Admin</option><option value="organisateur">🎯 Organisateur</option><option value="utilisateur">👤 Utilisateur</option></select></td>
-                    <td style={{ padding:'14px 18px' }}><select value={u.status} onChange={e=>updStatus(u.id,e.target.value as User['status'])} style={{ padding:'5px 12px', borderRadius:100, fontSize:12, fontWeight:700, color:XS[u.status].color, background:XS[u.status].bg, border:'none', cursor:'pointer', outline:'none', fontFamily:"'DM Sans',sans-serif" }}><option value="actif">🟢 Actif</option><option value="inactif">⚫ Inactif</option><option value="suspendu">🔴 Suspendu</option></select></td>
+                    <td style={{ padding:'14px 18px' }}><select value={u.role} onChange={e=>updRole(u.id,e.target.value as User['role'])} style={{ padding:'5px 12px', borderRadius:100, fontSize:12, fontWeight:700, color:RS[u.role].color, background:RS[u.role].bg, border:'none', cursor:'pointer', outline:'none', fontFamily:"'DM Sans',sans-serif" }}><option key="role-admin" value="admin">👑 Admin</option><option key="role-org" value="organisateur">🎯 Organisateur</option><option key="role-user" value="utilisateur">👤 Utilisateur</option></select></td>
+                    <td style={{ padding:'14px 18px' }}><select value={u.status} onChange={e=>updStatus(u.id,e.target.value as User['status'])} style={{ padding:'5px 12px', borderRadius:100, fontSize:12, fontWeight:700, color:XS[u.status].color, background:XS[u.status].bg, border:'none', cursor:'pointer', outline:'none', fontFamily:"'DM Sans',sans-serif" }}><option key="stat-active" value="actif">🟢 Actif</option><option key="stat-inactive" value="inactif">⚫ Inactif</option><option key="stat-suspended" value="suspendu">🔴 Suspendu</option></select></td>
                     <td style={{ padding:'14px 18px', fontSize:12, color:'#92400e' }}>{u.date_inscription}</td>
                     <td style={{ padding:'14px 18px' }}><span style={{ fontSize:13, fontWeight:800, color:'#f97316', background:'rgba(249,115,22,0.10)', padding:'4px 12px', borderRadius:100 }}>{u.evenements_inscrits}</span></td>
                     <td style={{ padding:'14px 18px' }}><div style={{ display:'flex', gap:6 }}><ActBtn icon={IC.eye} color="#f97316" title="Voir" onClick={()=>navigate(`/dashboard/utilisateurs/${u.id}`)} /><ActBtn icon={IC.edit} color="#f59e0b" title="Modifier" onClick={()=>navigate(`/dashboard/utilisateurs/modifier/${u.id}`)} /><ActBtn icon={IC.trash} color="#dc2626" title="Supprimer" onClick={()=>delUser(u.id)} /></div></td>
@@ -491,6 +491,7 @@ const DashboardPage: React.FC = () => {
     <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:22 }}>
         {[{title:'Tendance des réservations',emoji:'📈',g1:'#f97316',g2:'#ea580c'},{title:"Répartition par type",emoji:'🥧',g1:'#f59e0b',g2:'#f97316'}].map((ch,i)=>(
+          <div key={ch.title}
           <Card key={i}>
             <CardHead title={ch.title} right={<Ghost color={ch.g1} sm icon={IC.dl}>Exporter</Ghost>} />
             <div style={{ padding:24 }}><div style={{ height:200, borderRadius:18, background:`linear-gradient(135deg,${ch.g1}08,${ch.g2}06)`, border:`2px dashed ${ch.g1}35`, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:12 }}><span style={{ fontSize:52 }}>{ch.emoji}</span><p style={{ fontSize:13, color:'#c2410c', fontWeight:600 }}>Graphique disponible prochainement</p></div></div>
@@ -501,6 +502,7 @@ const DashboardPage: React.FC = () => {
         <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(rgba(255,255,255,0.07) 1px,transparent 1px)', backgroundSize:'22px 22px', pointerEvents:'none' }}/>
         <div style={{ position:'relative', display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(110px,1fr))', gap:32 }}>
           {[{n:stats.totalEvents,l:'Événements',e:'🎭'},{n:stats.totalReservations,l:'Réservations',e:'🎟️'},{n:stats.availablePlaces,l:'Places dispo',e:'🪑'},{n:`${stats.revenue}€`,l:'Revenus',e:'💰'}].map((s,i)=>(
+            <div key={s.l}
             <div key={i} style={{ textAlign:'center' }}><div style={{ fontSize:30 }}>{s.e}</div><div style={{ fontSize:36, fontWeight:900, color:'#fff', marginTop:4, lineHeight:1 }}>{s.n}</div><div style={{ fontSize:12, color:'rgba(255,255,255,0.78)', marginTop:5 }}>{s.l}</div></div>
           ))}
         </div>

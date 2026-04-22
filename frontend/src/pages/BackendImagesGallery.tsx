@@ -193,7 +193,7 @@ export default function BackendImagesGallery() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {images.map((filename, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div key={filename} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                   {/* Image */}
                   <div className="h-48 overflow-hidden bg-gray-100 relative">
                     <a 
