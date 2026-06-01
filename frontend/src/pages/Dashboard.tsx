@@ -310,9 +310,9 @@ export default function Dashboard() {
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
-                    <tr>
-                      {['ID', 'TITRE', 'DATE DEBUT', 'LIEU', 'PLACES', 'STATUT', 'ACTIONS'].map(h => (
-                        <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <tr key="header-events">
+                      {['ID', 'TITRE', 'DATE DEBUT', 'LIEU', 'PLACES', 'STATUT', 'ACTIONS'].map((h, idx) => (
+                        <th key={`header-event-${idx}`} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {h}
                         </th>
                       ))}
@@ -394,9 +394,9 @@ export default function Dashboard() {
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
-                    <tr>
-                      {['IDENTIFIANT', 'NOM', 'PRÉNOM', 'E-MAIL', 'RÔLE', 'ACTIONS'].map(h => (
-                        <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <tr key="header-users">
+                      {['IDENTIFIANT', 'NOM', 'PRÉNOM', 'E-MAIL', 'RÔLE', 'ACTIONS'].map((h, idx) => (
+                        <th key={`header-user-${idx}`} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {h}
                         </th>
                       ))}

@@ -326,6 +326,59 @@ public class FileUploadController {
     }
 
     /**
+     * ENDPOINT : Upload simple (sauvegarde locale)
+     * Utilisé par le frontend pour uploader des images
+     */
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        System.out.println("=== UPLOAD LOCAL FILE ===");
+        
+        try {
+            if (file == null || file.isEmpty()) {
+                return ResponseEntity.badRequest().body(createError("Fichier vide"));
+            }
+            
+            // Créer le dossier s'il n'existe pas
+            Files.createDirectories(uploadPath);
+            
+            String originalFilename = file.getOriginalFilename();
+            System.out.println("✅ Fichier reçu: " + originalFilename);
+            
+            // Créer un nom unique pour le fichier
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String uuid = java.util.UUID.randomUUID().toString().substring(0, 8);
+            String fileExtension = "";
+            
+            if (originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            
+            String newFilename = "upload_" + timestamp + "_" + uuid + fileExtension;
+            Path filePath = uploadPath.resolve(newFilename);
+            
+            // Sauvegarder le fichier
+            Files.write(filePath, file.getBytes());
+            System.out.println("✅ Fichier sauvegardé: " + newFilename);
+            
+            // Préparer la réponse
+            Map<String, String> response = new HashMap<>();
+            response.put("filename", newFilename);
+            response.put("originalFilename", originalFilename);
+            response.put("url", "http://localhost:8081/files/" + newFilename);
+            response.put("message", "Upload réussi!");
+            response.put("size", String.valueOf(file.getSize()));
+            
+            System.out.println("✅ Réponse: " + response);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Erreur upload: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(createError("Erreur: " + e.getMessage()));
+        }
+    }
+
+    /**
      * Méthode utilitaire pour créer une réponse d'erreur
      */
     private Map<String, String> createError(String message) {

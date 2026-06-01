@@ -157,7 +157,7 @@ export default function Home() {
   const getImg = useCallback((ev: Evenement): string => {
     if (ev.image?.trim()) return uploadService.getImageUrl(ev.image);
     if (backendImages.length > 0) {
-      const found = backendImages.find(i => i.toLowerCase().includes(ev.typeEvent?.nomType?.toLowerCase() ?? ''));
+      const found = backendImages.find(img => img.toLowerCase().includes(ev.typeEvent?.nomType?.toLowerCase() ?? ''));
       if (found) return uploadService.getImageUrl(found);
     }
     return uploadService.getRandomBackendImage();
@@ -227,6 +227,13 @@ export default function Home() {
       { label:'Spring Boot 3.5.0' },
       { label:'MySQL 5.7.24' },
     ]},
+  ];
+
+  // Statistiques pour le hero
+  const heroStats = [
+    { n: demoEvents.length, label: 'Événements 2026', emoji: '🎭', color: '#f97316' },
+    { n: demoEvents.reduce((t, ev) => t + (ev.nbPlace ?? 0), 0), label: 'Places disponibles', emoji: '🎟️', color: '#ea580c' },
+    { n: 3, label: 'Catégories', emoji: '🎨', color: '#f59e0b' }
   ];
 
   return (
@@ -307,7 +314,7 @@ export default function Home() {
 
                   {/* Items */}
                   <div style={{ padding:'10px 10px 8px', display:'flex', flexDirection:'column', gap:2 }}>
-                    {menuItems.map((item, i) => (
+                    {menuItems.map((item) => (
                       <button key={item.label} onClick={item.action}
                         style={{ width:'100%', textAlign:'left', padding:'11px 14px', borderRadius:14, fontSize:14, fontWeight:600, color:'#78350f', border:'2px solid transparent', background:'transparent', cursor:'pointer', fontFamily:"'DM Sans',sans-serif", transition:'all 0.18s ease', display:'flex', alignItems:'center', gap:10 }}
                         onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.background=`linear-gradient(135deg,${item.from}18,${item.to}0d)`; el.style.borderColor=`${item.from}35`; el.style.color=item.from; el.style.transform='translateX(5px)'; el.style.paddingLeft='18px'; }}
@@ -394,15 +401,11 @@ export default function Home() {
             </div>
 
             <div style={{ display:'flex', justifyContent:'center', flexWrap:'wrap', gap:48, marginTop:72, paddingTop:48, borderTop:'2px solid rgba(249,115,22,0.12)', animation:'fadeUp 0.7s ease 0.7s both' }}>
-              {[
-                { n: demoEvents.length,                                          label:'Événements 2026',    emoji:'🎭', color:'#f97316' },
-                { n: demoEvents.reduce((t, ev) => t + (ev.nbPlace ?? 0), 0),    label:'Places disponibles', emoji:'🎟️', color:'#ea580c' },
-                { n: 3,                                                          label:'Catégories',          emoji:'🎨', color:'#f59e0b' },
-              ].map((s, i) => (
-                <div key={s.label} style={{ textAlign:'center' }}>
-                  <div style={{ fontSize:36, marginBottom:6 }}>{s.emoji}</div>
-                  <div style={{ fontSize:40, fontWeight:900, color:s.color, lineHeight:1 }}>{s.n}</div>
-                  <div style={{ fontSize:13, color:'#92400e', fontWeight:600, marginTop:4 }}>{s.label}</div>
+              {heroStats.map((stat) => (
+                <div key={stat.label} style={{ textAlign:'center' }}>
+                  <div style={{ fontSize:36, marginBottom:6 }}>{stat.emoji}</div>
+                  <div style={{ fontSize:40, fontWeight:900, color:stat.color, lineHeight:1 }}>{stat.n}</div>
+                  <div style={{ fontSize:13, color:'#92400e', fontWeight:600, marginTop:4 }}>{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -469,8 +472,8 @@ export default function Home() {
                           { emoji:'🕐', val: fmtTime(ev.dateDebut) },        // ✅ dateDebut
                           { emoji:'📍', val: ev.adresse?.ville ?? 'Lieu TBD' },
                           { emoji:'🪑', val: `${ev.nbPlace ?? 0} places` },  // ✅ nbPlace
-                        ].map((m, mi) => m.val ? (
-                          <span key={mi} style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:12, color:'#92400e', background:'rgba(249,115,22,0.08)', padding:'4px 12px', borderRadius:100, fontWeight:600 }}>
+                        ].map((m) => m.val ? (
+                          <span key={m.emoji} style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:12, color:'#92400e', background:'rgba(249,115,22,0.08)', padding:'4px 12px', borderRadius:100, fontWeight:600 }}>
                             {m.emoji} {m.val}
                           </span>
                         ) : null)}
@@ -512,7 +515,7 @@ export default function Home() {
             </h2>
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:22 }}>
-            {serviceList.map((svc, i) => (
+            {serviceList.map((svc) => (
               <div key={svc.title}
                 style={{ padding:'28px 26px', borderRadius:22, background:'#fff', border:'2px solid #fde8d8', boxShadow:'0 4px 20px rgba(249,115,22,0.07)', cursor:'pointer', transition:'all 0.28s cubic-bezier(0.34,1.56,0.64,1)' }}
                 onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.transform='translateY(-6px)'; el.style.boxShadow='0 22px 52px rgba(249,115,22,0.18)'; el.style.borderColor=`${svc.from}45`; }}
@@ -561,12 +564,11 @@ export default function Home() {
               </div>
               <p style={{ fontSize:13, color:'rgba(255,255,255,0.40)', lineHeight:1.8 }}>Plateforme complète pour la gestion d'événements culturels professionnels.</p>
             </div>
-            {/* ✅ footerCols typé — plus de (lk as any) */}
-            {footerCols.map((col, ci) => (
+            {footerCols.map((col) => (
               <div key={col.title}>
                 <h4 style={{ fontSize:11, fontWeight:800, color:'rgba(255,255,255,0.38)', letterSpacing:3, textTransform:'uppercase', marginBottom:20 }}>{col.title}</h4>
                 <ul style={{ listStyle:'none', padding:0, margin:0, display:'flex', flexDirection:'column', gap:12 }}>
-                  {col.links.map((lk, li) => (
+                  {col.links.map((lk) => (
                     <li key={lk.label}>
                       {lk.href
                         ? <a href={lk.href} style={{ fontSize:14, color:'rgba(255,255,255,0.45)', textDecoration:'none', transition:'color 0.2s' }} onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='#fb923c'} onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='rgba(255,255,255,0.45)'}>{lk.label}</a>

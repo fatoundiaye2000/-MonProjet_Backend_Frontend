@@ -9,8 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.EvenementDTO;
+import com.example.demo.dto.AdresseDTO;
+import com.example.demo.dto.TarifDTO;
+import com.example.demo.dto.TypeEventDTO;
 import com.example.demo.entities.Evenement;
+import com.example.demo.entities.TypeEvent;
+import com.example.demo.entities.Adresse;
+import com.example.demo.entities.Tarif;
 import com.example.demo.repos.EvenementRepository;
+import com.example.demo.repos.TypeEventRepository;
+import com.example.demo.repos.AdresseRepository;
+import com.example.demo.repos.TarifRepository;
 
 @Service
 public class EvenementServiceImpl implements EvenementService {
@@ -20,6 +29,15 @@ public class EvenementServiceImpl implements EvenementService {
     
     @Autowired
     private EvenementRepository evenementRepository;
+    
+    @Autowired
+    private TypeEventRepository typeEventRepository;
+    
+    @Autowired
+    private AdresseRepository adresseRepository;
+    
+    @Autowired
+    private TarifRepository tarifRepository;
 
     @Override
     public Evenement convertDtoToEntity(EvenementDTO evenementDTO) {
@@ -69,11 +87,48 @@ public class EvenementServiceImpl implements EvenementService {
         System.out.println("🔵 EvenementService.save()");
         System.out.println("📝 Titre: " + evenementDTO.getTitreEvent());
         System.out.println("📝 Image: " + evenementDTO.getImage());
+        System.out.println("📝 TypeEvent: " + (evenementDTO.getTypeEvent() != null ? "ID=" + evenementDTO.getTypeEvent().getIdTypeEvent() : "null"));
+        System.out.println("📝 Adresse: " + (evenementDTO.getAdresse() != null ? evenementDTO.getAdresse().getRue() : "null"));
+        System.out.println("📝 Tarif: " + (evenementDTO.getTarif() != null ? evenementDTO.getTarif().getPrix() : "null"));
         
         try {
-            // Le DTO contient déjà le nom du fichier (pas l'URL)
-            // On sauvegarde directement
-            Evenement evenement = convertDtoToEntity(evenementDTO);
+            // Convertir en entité
+            Evenement evenement = modelMapper.map(evenementDTO, Evenement.class);
+            
+            // Chercher/créer TypeEvent
+            if (evenementDTO.getTypeEvent() != null && evenementDTO.getTypeEvent().getIdTypeEvent() != null) {
+                TypeEvent typeEvent = typeEventRepository.findById(evenementDTO.getTypeEvent().getIdTypeEvent())
+                    .orElseGet(() -> {
+                        System.out.println("⚠️  TypeEvent non trouvé, création automatique");
+                        TypeEvent newTypeEvent = new TypeEvent();
+                        newTypeEvent.setIdTypeEvent(evenementDTO.getTypeEvent().getIdTypeEvent());
+                        newTypeEvent.setNomType(evenementDTO.getTypeEvent().getNomType());
+                        return typeEventRepository.save(newTypeEvent);
+                    });
+                evenement.setTypeEvent(typeEvent);
+            }
+            
+            // Chercher/créer Adresse
+            if (evenementDTO.getAdresse() != null) {
+                Adresse adresse = modelMapper.map(evenementDTO.getAdresse(), Adresse.class);
+                if (adresse.getIdAdresse() == null) {
+                    adresse = adresseRepository.save(adresse);
+                    System.out.println("✅ Nouvelle adresse créée: ID=" + adresse.getIdAdresse());
+                }
+                evenement.setAdresse(adresse);
+            }
+            
+            // Chercher/créer Tarif
+            if (evenementDTO.getTarif() != null) {
+                Tarif tarif = modelMapper.map(evenementDTO.getTarif(), Tarif.class);
+                if (tarif.getIdTarif() == null) {
+                    tarif = tarifRepository.save(tarif);
+                    System.out.println("✅ Nouveau tarif créé: ID=" + tarif.getIdTarif());
+                }
+                evenement.setTarif(tarif);
+            }
+            
+            // Sauvegarder l'événement
             Evenement savedEvenement = evenementRepository.save(evenement);
             
             EvenementDTO savedDto = convertEntityToDto(savedEvenement);

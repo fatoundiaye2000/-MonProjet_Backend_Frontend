@@ -30,7 +30,7 @@ interface User {
 // ── SVG ───────────────────────────────────────────────────────────────────────
 const I = ({ d, s = 16 }: { d: string | string[]; s?: number }) => (
   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ display:'block', flexShrink:0 }}>
-    {Array.isArray(d) ? d.map((p, i) => <path key={i} d={p} />) : <path d={d} />}
+    {Array.isArray(d) ? d.map((p, i) => <path key={`path-${i}`} d={p} />) : <path d={d} />}
   </svg>
 );
 const IC = {
@@ -490,9 +490,8 @@ const DashboardPage: React.FC = () => {
   case 'statistiques': return (
     <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:22 }}>
-        {[{title:'Tendance des réservations',emoji:'📈',g1:'#f97316',g2:'#ea580c'},{title:"Répartition par type",emoji:'🥧',g1:'#f59e0b',g2:'#f97316'}].map((ch,i)=>(
-          <div key={ch.title}
-          <Card key={i}>
+        {[{title:'Tendance des réservations',emoji:'📈',g1:'#f97316',g2:'#ea580c'},{title:"Répartition par type",emoji:'🥧',g1:'#f59e0b',g2:'#f97316'}].map((ch)=>(
+          <Card key={ch.title}>
             <CardHead title={ch.title} right={<Ghost color={ch.g1} sm icon={IC.dl}>Exporter</Ghost>} />
             <div style={{ padding:24 }}><div style={{ height:200, borderRadius:18, background:`linear-gradient(135deg,${ch.g1}08,${ch.g2}06)`, border:`2px dashed ${ch.g1}35`, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:12 }}><span style={{ fontSize:52 }}>{ch.emoji}</span><p style={{ fontSize:13, color:'#c2410c', fontWeight:600 }}>Graphique disponible prochainement</p></div></div>
           </Card>
@@ -501,9 +500,8 @@ const DashboardPage: React.FC = () => {
       <div style={{ borderRadius:26, padding:'34px', overflow:'hidden', position:'relative', background:'linear-gradient(135deg,#f97316,#ea580c,#f59e0b)', boxShadow:'0 14px 44px rgba(249,115,22,0.42)' }}>
         <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(rgba(255,255,255,0.07) 1px,transparent 1px)', backgroundSize:'22px 22px', pointerEvents:'none' }}/>
         <div style={{ position:'relative', display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(110px,1fr))', gap:32 }}>
-          {[{n:stats.totalEvents,l:'Événements',e:'🎭'},{n:stats.totalReservations,l:'Réservations',e:'🎟️'},{n:stats.availablePlaces,l:'Places dispo',e:'🪑'},{n:`${stats.revenue}€`,l:'Revenus',e:'💰'}].map((s,i)=>(
-            <div key={s.l}
-            <div key={i} style={{ textAlign:'center' }}><div style={{ fontSize:30 }}>{s.e}</div><div style={{ fontSize:36, fontWeight:900, color:'#fff', marginTop:4, lineHeight:1 }}>{s.n}</div><div style={{ fontSize:12, color:'rgba(255,255,255,0.78)', marginTop:5 }}>{s.l}</div></div>
+          {[{n:stats.totalEvents,l:'Événements',e:'🎭'},{n:stats.totalReservations,l:'Réservations',e:'🎟️'},{n:stats.availablePlaces,l:'Places dispo',e:'🪑'},{n:`${stats.revenue}€`,l:'Revenus',e:'💰'}].map((s)=>(
+            <div key={s.l} style={{ textAlign:'center' }}><div style={{ fontSize:30 }}>{s.e}</div><div style={{ fontSize:36, fontWeight:900, color:'#fff', marginTop:4, lineHeight:1 }}>{s.n}</div><div style={{ fontSize:12, color:'rgba(255,255,255,0.78)', marginTop:5 }}>{s.l}</div></div>
           ))}
         </div>
       </div>

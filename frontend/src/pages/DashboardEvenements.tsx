@@ -2,24 +2,23 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import eventService from '../services/event.service';
 import uploadService from '../services/upload.service';
-import { Evenement } from '../types/event.types';
+import type { Evenement, TypeEventDTO, AdresseDTO, TarifDTO } from '../services/event.service';
 
 export default function DashboardEvenements() {
   const [events, setEvents] = useState<Evenement[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     loadEvents();
   }, []);
 
-  const loadEvents = async () => {
+  const loadEvents = async (): Promise<void> => {
     try {
       setLoading(true);
       const data = await eventService.getAllEvents();
       setEvents(data);
     } catch (err: unknown) {
-      // Méthode 1: Vérification du type
       if (err instanceof Error) {
         setError(err.message || 'Erreur lors du chargement des événements');
       } else if (typeof err === 'string') {
@@ -27,16 +26,12 @@ export default function DashboardEvenements() {
       } else {
         setError('Erreur lors du chargement des événements');
       }
-      
-      // Méthode alternative 2: Utilisation d'un type personnalisé
-      // const error = err as { message?: string };
-      // setError(error?.message || 'Erreur lors du chargement des événements');
     } finally {
       setLoading(false);
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | Date): string => {
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('fr-FR', {
@@ -49,11 +44,42 @@ export default function DashboardEvenements() {
     }
   };
 
-  const getEventImage = (event: Evenement) => {
+  const getEventImage = (event: Evenement): string => {
     if (event.image && event.image.trim() !== '') {
       return uploadService.getImageUrl(event.image);
     }
     return uploadService.getRandomBackendImage();
+  };
+
+  const getTypeEventName = (typeEvent: TypeEventDTO | undefined): string => {
+    if (!typeEvent) return 'Non spécifié';
+    return typeEvent.libelleTypeEvent || 'Non spécifié';
+  };
+
+  const getAdresseVille = (adresse: AdresseDTO | undefined): string => {
+    if (!adresse) return 'Lieu non spécifié';
+    return adresse.ville || 'Lieu non spécifié';
+  };
+
+  const getTarifPrix = (tarif: TarifDTO | undefined): number | string => {
+    if (!tarif) return '?';
+    if (tarif.prix !== undefined && tarif.prix !== null) {
+      return tarif.prix;
+    }
+    return '?';
+  };
+
+  const handleDeleteEvent = async (idEvent: number): Promise<void> => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
+      try {
+        await eventService.deleteEvent(idEvent);
+        await loadEvents(); // Recharger la liste après suppression
+        setError(''); // Effacer toute erreur précédente
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la suppression';
+        setError(errorMessage);
+      }
+    }
   };
 
   return (
@@ -139,7 +165,7 @@ export default function DashboardEvenements() {
                             src={getEventImage(event)}
                             alt={event.titreEvent}
                             className="w-full h-full object-cover"
-                            onError={(e) => {
+                            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                               e.currentTarget.src = uploadService.getDefaultFallback();
                             }}
                           />
@@ -154,7 +180,7 @@ export default function DashboardEvenements() {
                             <p className="text-gray-600 mt-1 line-clamp-2">{event.description}</p>
                           </div>
                           <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded-full">
-                            {event.typeEvent?.nomType || 'Non spécifié'}
+                            {getTypeEventName(event.typeEvent)}
                           </span>
                         </div>
 
@@ -169,14 +195,14 @@ export default function DashboardEvenements() {
                             <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             </svg>
-                            <span className="text-sm text-gray-700">{event.adresse?.ville || 'Lieu non spécifié'}</span>
+                            <span className="text-sm text-gray-700">{getAdresseVille(event.adresse)}</span>
                           </div>
                           <div className="flex items-center">
                             <svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span className="text-sm text-gray-700">
-                              {event.tarif?.prix === 0 ? 'Gratuit' : `${event.tarif?.prix ?? '?'}€`}
+                              {getTarifPrix(event.tarif) === 0 ? 'Gratuit' : `${getTarifPrix(event.tarif)}€`}
                             </span>
                           </div>
                           <div className="flex items-center">
@@ -201,11 +227,7 @@ export default function DashboardEvenements() {
                             Modifier
                           </Link>
                           <button
-                            onClick={() => {
-                              if (window.confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
-                                // Ajouter la logique de suppression ici
-                              }
-                            }}
+                            onClick={() => handleDeleteEvent(event.idEvent)}
                             className="px-4 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm"
                           >
                             Supprimer

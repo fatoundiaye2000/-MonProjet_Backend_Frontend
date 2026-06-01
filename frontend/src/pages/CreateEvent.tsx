@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import eventService from '../services/event.service';
 
 export default function CreateEvent() {
   const navigate = useNavigate();
@@ -19,6 +20,19 @@ export default function CreateEvent() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
+  // Mapping des types d'événements vers leurs IDs et noms
+  const getTypeEventObject = (typeName: string): { idTypeEvent: number; nomType: string } => {
+    const typeMapping: { [key: string]: { idTypeEvent: number; nomType: string } } = {
+      'Festival': { idTypeEvent: 1, nomType: 'Festival' },
+      'Concert': { idTypeEvent: 2, nomType: 'Concert' },
+      'Exposition': { idTypeEvent: 3, nomType: 'Exposition' },
+      'Spectacle': { idTypeEvent: 4, nomType: 'Spectacle' },
+      'Conférence': { idTypeEvent: 5, nomType: 'Conférence' },
+      'Atelier': { idTypeEvent: 6, nomType: 'Atelier' }
+    };
+    return typeMapping[typeName] || { idTypeEvent: 1, nomType: 'Festival' };
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -35,9 +49,62 @@ export default function CreateEvent() {
     setLoading(true);
     setMessage('');
 
-    // Simuler une création d'événement
-    setTimeout(() => {
-      console.log('Événement créé:', formData);
+    try {
+      let imageName = undefined;
+
+      // ÉTAPE 1 : Si une image existe, l'uploader d'abord
+      if (formData.image) {
+        console.log('📸 Upload de l\'image:', formData.image.name);
+        
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', formData.image);
+        
+        try {
+          const uploadResponse = await fetch('http://localhost:8081/files/upload', {
+            method: 'POST',
+            body: uploadFormData,
+            credentials: 'include'
+          });
+          
+          if (!uploadResponse.ok) {
+            throw new Error('Échec de l\'upload d\'image');
+          }
+          
+          const uploadResult = await uploadResponse.json();
+          imageName = uploadResult.filename || formData.image.name;
+          console.log('✅ Image uploadée:', imageName);
+        } catch (uploadError) {
+          console.warn('⚠️ Erreur upload image, continuant sans image:', uploadError);
+          setMessage('⚠️ Erreur lors de l\'upload de l\'image');
+        }
+      }
+
+      // ÉTAPE 2 : Créer l'objet événement avec le filename uploadé
+      const newEvent = {
+        titreEvent: formData.titre,
+        description: formData.description,
+        // Dates au format ISO pour que Jackson les parse correctement
+        dateDebut: `${formData.date}T${formData.heure}:00.000Z`,
+        dateFin: `${formData.date}T${formData.heure}:00.000Z`,
+        adresse: {
+          rue: formData.lieu,
+          ville: formData.ville,
+          codePostal: formData.codePostal
+        },
+        typeEvent: getTypeEventObject(formData.type), // Envoyer l'objet TypeEventDTO complet
+        nbPlace: parseInt(formData.places.toString()),
+        tarif: {
+          prix: parseFloat(formData.prix.toString()), // Double au lieu d'Integer
+          isPromotion: false
+        },
+        image: imageName  // Utiliser le filename uploadé
+      };
+
+      console.log('📤 Envoi événement:', JSON.stringify(newEvent, null, 2));
+
+      // ÉTAPE 3 : Envoyer l'événement au backend
+      await eventService.createEvent(newEvent);
+      
       setLoading(false);
       setMessage('✅ Événement créé avec succès !');
       
@@ -45,7 +112,12 @@ export default function CreateEvent() {
       setTimeout(() => {
         navigate('/dashboard/evenements');
       }, 2000);
-    }, 1500);
+    } catch (error: unknown) {
+      setLoading(false);
+      const errorMessage = error instanceof Error ? error.message : 'Impossible de créer l\'événement';
+      setMessage(`❌ Erreur: ${errorMessage}`);
+      console.error('Erreur création événement:', error);
+    }
   };
 
   return (
