@@ -31,4 +31,5 @@ public interface UserService {
     // ⭐⭐⭐ AJOUTER CETTE MÉTHODE POUR LE TP4 ⭐⭐⭐
     User registerUser(RegistrationRequestDTO request);
     
+    
 }

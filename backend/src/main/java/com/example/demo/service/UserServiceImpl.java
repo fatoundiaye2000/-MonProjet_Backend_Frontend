@@ -165,6 +165,6 @@ public class UserServiceImpl implements UserService {
         newUser.setRoles(roles);
 
         return userRepository.save(newUser);
-    }
 
+       }
 }

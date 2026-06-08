@@ -129,6 +129,8 @@ public class UserController {
         return userService.findAll();
     }
 
+   
+
     @GetMapping("/api/users/getById/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
         return userService.findById(id);
